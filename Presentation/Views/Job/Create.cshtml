@@ -1,0 +1,84 @@
+﻿@model Domain.Entity.Schedule
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+<div class="row">
+    <form asp-action="Create" method="post">
+        <div class="row">
+            <div class="col-8">
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastExecutedDate" class="control-label">ExecutedDate</label>
+                    <input asp-for="LastExecutedDate" class="form-control" />
+                </div>
+
+                <div>
+                    <label>Repeat:</label><br />
+                    <input type="radio" id="repeat" name="repeatOption" value="Repeat" onclick="toggleRepeatInputs(true)" />
+                    <label for="repeat">Repeat</label><br />
+                    <input type="radio" id="none" name="repeatOption" value="None" onclick="toggleRepeatInputs(false)" checked />
+                    <label for="none">None</label>
+                </div>
+
+                <div id="repeatInputs" style="display: none;">
+                    <h3>Enter Time Details:</h3>
+                    <label>Year:</label>
+                    <input type="number" name="year" min="0" /><br />
+                    <label>Month:</label>
+                    <input type="number" name="month" min="0" /><br />
+                    <label>Day:</label>
+                    <input type="number" name="day" min="0" /><br />
+                    <label>Hour:</label>
+                    <input type="number" name="hour" min="0" /><br />
+                    <label>Minute:</label>
+                    <input type="number" name="minute" min="0"  /><br />
+                    <label>Second:</label>
+                    <input type="number" name="second" min="0" /><br />
+                </div>
+
+                <div>
+                    <label>Send To:</label><br />
+                    <input type="radio" id="sendToRoom" name="sendToOption" value="RoomName" onclick="toggleRoomInput(true)" />
+                    <label for="sendToRoom">Send To RoomName</label><br />
+                    <input type="radio" id="sendToAll" name="sendToOption" value="All" onclick="toggleRoomInput(false)" checked />
+                    <label for="sendToAll">All</label>
+                </div>
+
+                <div id="roomInput" style="display: none;">
+                    <label>Room Name:</label>
+                    <input type="text" name="roomName" />
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Types</label>
+                    <select name="selectedType" asp-items="@ViewBag.Types" class="form-select">
+                        <option disabled selected>Select a type</option>
+                    </select>
+                </div>
+                <div class="form-group mt-3 mb-3">
+                    <button type="submit" class="btn btn-primary mt-3 mb-3">Create</button>
+                    <a class="btn btn-primary mt-3 mb-3" asp-action="Index">Back to List</a>
+                </div>
+            </div>
+
+        </div>
+
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleRepeatInputs(isRepeat) {
+            document.getElementById("repeatInputs").style.display = isRepeat ? "block" : "none";
+        }
+
+        function toggleRoomInput(isRoom) {
+            document.getElementById("roomInput").style.display = isRoom ? "block" : "none";
+        }
+    </script>
+}

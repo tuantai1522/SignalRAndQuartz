@@ -1,0 +1,314 @@
+﻿@model IEnumerable<Domain.Entity.Message>
+
+@if (!string.IsNullOrEmpty(@ViewBag.UserName!))
+{
+    <h1 class="display-4">Welcome, @ViewBag.UserName at room: @ViewBag.RoomName</h1>
+        <ul id="eventList" class="overflow-auto" style="height: 250px;">
+
+        </ul>
+    <form asp-action="CreateMessage" onsubmit="sendMessage(event)" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-2">Message</div>
+            <div class="col-4"><input type="text" name="Message" id="messageInput" /></div>
+            <div class="d-flex align-items-center justify-content-center row p-4">
+                <input id="userName" name="UserName" hidden value="@ViewBag.UserName" />
+                <input id="roomName" name="RoomName" hidden value="@ViewBag.RoomName" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-2">Select File</div>
+            <div class="col-4">
+                <input type="file" name="file" id="fileInput" />
+            </div>
+        </div>
+        <button class="btn btn-primary mt-3 mb-3" type="submit">Send message</button>
+    </form>
+
+    <div class="row p-1">
+        <div class="col-6">
+            <ul id="messageList" class="overflow-auto" style="height: 250px;">
+                @foreach (var message in Model)
+                {
+                    <li>
+                        @message.SenderName: @message.Content at @message.Created.AddHours(7)
+                        @if (message.FileData != null)
+                        {
+                            @if (message.FileName.EndsWith(".jpg") 
+                                || message.FileName.EndsWith(".jpeg") 
+                                || message.FileName.EndsWith(".png"))
+                            {
+                                <button class="btn btn-secondary show-image" data-id="@message.Id">Show Image</button>
+
+                                <!-- Modal -->
+                                <div class="modal" id="modal-@message.Id" style="display: none;">
+                                    <div class="modal-content">
+                                        <span class="close" data-id="@message.Id">&times;</span>
+                                        <img src="@Url.Action("GetFile", "Home", new { messageId = message.Id })" alt="Uploaded Image" />
+                                    </div>
+                                </div>
+                            }
+                            else if (message.FileName.EndsWith(".mp4") 
+                                || message.FileName.EndsWith(".avi")
+                                || message.FileName.EndsWith(".mov"))
+                            {
+                                <button class="btn btn-secondary play-video" data-id="@message.Id">Play Video</button>
+
+                                <!-- Video Modal -->
+                                <div class="modal" id="video-modal-@message.Id" style="display: none;">
+                                    <div class="modal-content">
+                                        <span class="close" data-id="@message.Id">&times;</span>
+                                        <video controls style="width: 100%;">
+                                            <source src="@Url.Action("GetFile", "Home", new { messageId = message.Id })" type="video/mp4">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <a href="@Url.Action("GetFile", "Home", new { messageId = message.Id })" target="_blank">
+                                    Download @message.FileName
+                                </a>
+                            }
+                        }
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+}
+<style>
+    .modal {
+        display: none; /* Ẩn modal theo mặc định */
+        position: fixed; /* Giữ modal ở vị trí cố định */
+        z-index: 1000; /* Đặt z-index cao để đảm bảo modal ở trên cùng */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Cho phép cuộn nếu cần */
+        background-color: rgba(0, 0, 0, 0.5); /* Mờ phần nền */
+    }
+
+    .modal-content {
+        position: relative;
+        margin: auto; /* Đặt modal ở giữa */
+        padding: 0;
+        width: 80%; /* Đặt chiều rộng của modal */
+        max-width: 600px; /* Đặt chiều rộng tối đa */
+        translate: 0 50%;
+    }
+
+        .modal-content img {
+            width: 100%; /* Đặt chiều rộng của hình ảnh để đầy modal */
+            height: auto; /* Giữ tỷ lệ khung hình */
+        }
+
+    .close {
+        position: absolute; /* Đặt vị trí nút đóng */
+        right: 15px;
+        top: 10px;
+        color: white; /* Màu chữ nút đóng */
+        font-size: 25px; /* Kích thước chữ nút đóng */
+        cursor: pointer; /* Hiển thị con trỏ chuột */
+    }
+
+</style>
+
+<script>
+    document.querySelectorAll('.show-image').forEach(button => {
+        button.addEventListener('click', function () {
+            console.log("click");
+
+            var messageId = this.getAttribute('data-id');
+            var modal = document.getElementById('modal-' + messageId);
+
+            // Hiển thị modal
+            modal.style.display = "block";
+        });
+    });
+
+    document.querySelectorAll('.play-video').forEach(button => {
+        button.addEventListener('click', function () {
+            var messageId = this.getAttribute('data-id');
+            var videoModal = document.getElementById('video-modal-' + messageId);
+            videoModal.style.display = "block";
+        });
+    });
+
+    // Đóng modal khi nhấn nút đóng
+    document.querySelectorAll('.close').forEach(closeButton => {
+        closeButton.addEventListener('click', function () {
+            var messageId = this.getAttribute('data-id');
+            var modal = document.getElementById('modal-' + messageId);
+
+            // Ẩn modal
+            modal.style.display = "none";
+        });
+    });
+
+    // Đóng modal khi nhấn ra ngoài hình ảnh
+    window.addEventListener('click', function (event) {
+        document.querySelectorAll('.modal').forEach(modal => {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        });
+    });
+
+    var connection = new signalR.HubConnectionBuilder()
+        .withUrl("/chat")
+        .build();
+
+    connection.on("ReceiveEvent", function (data) {
+        console.log(data);
+
+        const {content} = data;
+
+        var li = document.createElement("li");
+        li.classList.add("alert");
+        li.classList.add("alert-primary");
+
+        document.getElementById("eventList").appendChild(li);
+
+        li.textContent = `${content}`;
+
+    });
+
+    connection.on("ReceiveMessage", function (data) {
+        const { text, name, fileName, fileUrl, hasFile } = data;
+        var li = document.createElement("li");
+        document.getElementById("messageList").appendChild(li);
+
+        var currentDate = new Date();
+        var formattedDate = currentDate.toLocaleString("en-US", {
+            month: "numeric",
+            day: "numeric",
+            year: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+            hour12: true
+        });
+
+        li.textContent = `${name}: ${text} at ${formattedDate}`;
+
+        if (hasFile) 
+        {
+            if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg") || fileName.endsWith(".png")) 
+            {
+                var imgButton = document.createElement('button');
+                imgButton.textContent = "Show Image";
+                imgButton.classList.add("btn", "btn-secondary");
+                imgButton.onclick = function () {
+                    var modal = document.getElementById(`modal-${fileName}`);
+                    modal.style.display = "block";
+                };
+
+                var modal = document.createElement('div');
+                modal.classList.add("modal");
+                modal.id = `modal-${fileName}`;
+                modal.style.display = "none";
+
+                var modalContent = document.createElement('div');
+                modalContent.classList.add("modal-content");
+
+                var closeModal = document.createElement('span');
+                closeModal.textContent = "×";
+                closeModal.classList.add("close");
+                closeModal.onclick = function () {
+                    modal.style.display = "none";
+                };
+
+                var img = document.createElement('img');
+                img.src = fileUrl; // Sử dụng URL tải file
+                img.alt = "Uploaded Image";
+
+                modalContent.appendChild(closeModal);
+                modalContent.appendChild(img);
+                modal.appendChild(modalContent);
+                document.body.appendChild(modal);
+
+                li.appendChild(imgButton);
+        }
+        else if (fileName.endsWith(".mp4") || fileName.endsWith(".avi") || fileName.endsWith(".mov")) {
+            var videoButton = document.createElement('button');
+            videoButton.textContent = "Play Video";
+            videoButton.classList.add("btn", "btn-secondary");
+            videoButton.onclick = function () {
+                var modal = document.getElementById(`video-modal-${data.FileName}`);
+                modal.style.display = "block";
+            };
+
+            var videoModal = document.createElement('div');
+            videoModal.classList.add("modal");
+            videoModal.id = `video-modal-${data.FileName}`;
+            videoModal.style.display = "none";
+
+            var videoModalContent = document.createElement('div');
+            videoModalContent.classList.add("modal-content");
+
+            var closeVideoModal = document.createElement('span');
+            closeVideoModal.textContent = "×";
+            closeVideoModal.classList.add("close");
+            closeVideoModal.onclick = function () {
+                videoModal.style.display = "none";
+            };
+
+            var video = document.createElement('video');
+            video.controls = true;
+            var source = document.createElement('source');
+            source.src = fileUrl;
+            source.type = "video/mp4";
+            video.appendChild(source);
+
+            videoModalContent.appendChild(closeVideoModal);
+            videoModalContent.appendChild(video);
+            videoModal.appendChild(videoModalContent);
+            document.body.appendChild(videoModal);
+
+            li.appendChild(videoButton);
+        }
+        else {
+            var downloadLink = document.createElement('a');
+            downloadLink.href = fileUrl;
+            downloadLink.textContent = `Download ${fileName}`;
+            downloadLink.target = "_blank";
+
+            li.appendChild(downloadLink);
+        }
+
+        document.getElementById('messageInput').value = '';
+        document.getElementById('fileInput').value = '';
+
+    }
+    })
+
+    connection.start()
+        .then(function () {
+            console.log("Connection started");
+            connection.invoke('joinRoom', '@ViewBag.RoomName');
+        })
+        .catch(function (err) {
+            console.log(err)
+        })
+
+    var sendMessage = function (event) {
+        event.preventDefault();
+
+        var data = new FormData(event.target);
+
+        document.getElementById('messageInput').value = '';
+        axios.post('/Home/CreateMessage', data, {
+            headers: {
+                'Content-Type': 'multipart/form-data' // Thiết lập header
+            }
+        })
+            .then(res => {
+                console.log("Message Sent!")
+            })
+            .catch(err => {
+                console.log("Failed to send message!")
+            })
+    }
+</script>

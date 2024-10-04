@@ -1,0 +1,72 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h1 class="display-4">Welcome to Chat app</h1>
+<div class="d-flex align-items-center justify-content-center">
+    <form id="userForm" method="post" action="/Home/CheckUserName">
+        <div class="container gap-2">
+            <h2 class="display-4">Please enter your user name and room</h2>
+                <div class="row p-1">
+                    <div class="col-6">User name</div>
+                    <div class="col-6"><input type="text" id="userName" name="userName"/></div>
+                </div>
+                <div class="row p-1">
+                    <div class="col-6">Room name</div>
+                    <div class="col-6"><input type="text" id="roomName" name="roomName" /></div>
+                </div>
+                <div class="d-flex align-items-center justify-content-center row p-4">
+                <input class="col-6" type="submit" id="acceptButton" value="Accept" />
+                </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById("acceptButton").addEventListener("click", function (event) {
+
+        var userName = document.getElementById("userName").value;
+        var roomName = document.getElementById("roomName").value;
+
+        event.preventDefault();
+
+        if (userName === "" || roomName === "") return;
+
+    });
+
+    document.getElementById("acceptButton").addEventListener("click", function (event) {
+        event.preventDefault(); 
+
+        var userName = document.getElementById("userName").value;
+        var roomName = document.getElementById("roomName").value;
+
+        if (userName === "" || roomName === "") {
+            return;
+        }
+
+        // Tạo đối tượng FormData
+        var formData = new FormData();
+        formData.append("userName", userName);
+        formData.append("roomName", roomName);
+
+        // Gửi dữ liệu qua fetch API
+        fetch("/Home/CheckUserName", {
+            method: "POST",
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest' // Chỉ định yêu cầu AJAX
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return JSON.stringify(response);
+        })
+        .then(data => {
+            window.location.href = `/Home/ShowInfo?userName=${userName}&roomName=${roomName}`;
+        })
+        .catch(error => console.error("Error:", error));
+    });
+
+</script>
