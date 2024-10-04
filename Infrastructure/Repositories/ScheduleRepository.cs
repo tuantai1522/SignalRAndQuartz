@@ -37,11 +37,22 @@ namespace Infrastructure.Repositories
                     .ToListAsync();
 
         public async Task<IList<Schedule>> GetSchedulesToExecute()
-            => await _context.Schedules
-                    .Where(x => x.IsActive && 
-                        x.LastExecutedDate.AddSeconds((double)x.SecondsToExecute) >= DateTime.Now)
-                    .AsNoTracking()
-                    .ToListAsync();
+        {
+            var schedules = await _context.Schedules
+                .AsNoTracking()
+                .ToListAsync();
+
+            IList<Schedule> result = [];
+
+            foreach (var x in schedules)
+            {
+                if (x.IsActive && x.NextExecutedDate.AddSeconds(x.SecondsToExecute) <= DateTime.Now)
+                    result.Add(x);
+            }
+
+            return result;
+        }
+
 
         public async Task UpdateActiveByScheduleId(string? id, bool status = false)
         {
@@ -50,7 +61,7 @@ namespace Infrastructure.Repositories
                 .FirstOrDefaultAsync(x => x.Id.ToString() == id) ?? throw new KeyNotFoundException();
 
             scheduleInDatabase.IsActive = status;
-            scheduleInDatabase.LastExecutedDate = DateTime.Now.AddHours(7);
+            scheduleInDatabase.NextExecutedDate = DateTime.Now.AddHours(7);
 
             _context.Schedules.Update(scheduleInDatabase);
 
@@ -64,7 +75,7 @@ namespace Infrastructure.Repositories
                 .FirstOrDefaultAsync(x => x.Id.ToString() == id) ?? throw new KeyNotFoundException();
 
             scheduleInDatabase.Name = schedule.Name;
-            scheduleInDatabase.LastExecutedDate = schedule.LastExecutedDate;
+            scheduleInDatabase.NextExecutedDate = schedule.NextExecutedDate;
             scheduleInDatabase.SecondsToExecute = schedule.SecondsToExecute;
             scheduleInDatabase.Type = schedule.Type;
             scheduleInDatabase.RoomNames = schedule.RoomNames;

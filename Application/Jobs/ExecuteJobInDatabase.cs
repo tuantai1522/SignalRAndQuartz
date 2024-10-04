@@ -60,7 +60,7 @@ namespace Application.Jobs
                 if (schedule.SecondsToExecute != 0)
                 {
                     // execute multiple times
-                    schedule.LastExecutedDate = DateTime.Now.AddSeconds((double)schedule.SecondsToExecute);
+                    schedule.NextExecutedDate = schedule.NextExecutedDate.AddSeconds((double)schedule.SecondsToExecute);
                 }
                 else
                 {

@@ -4,6 +4,7 @@ using Application.Schedule.Commands.DeleteScheduleById;
 using Application.Schedule.Commands.UpdateActiveByScheduleId;
 using Application.Schedule.Commands.UpdateScheduleById;
 using Application.Schedule.Queries.GetSchedules;
+using Application.Schedule.Queries.GetSchedulesToExecute;
 using Application.Sender.Queries.GetSenderByUserName;
 using Domain.Entity;
 using MediatR;
@@ -43,7 +44,7 @@ namespace Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(
                 string Name, 
-                DateTime LastExecutedDate,
+                DateTime NextExecutedDate,
                 string repeatOption,
                 int Year,
                 int Month,
@@ -79,7 +80,7 @@ namespace Presentation.Controllers
             await _mediator.Send(new CreateScheduleCommand()
             {
                 IsActive = true,
-                LastExecutedDate = LastExecutedDate,
+                NextExecutedDate = NextExecutedDate,
                 SecondsToExecute = totalSeconds,
                 Name = Name,
                 Type = selectedType,

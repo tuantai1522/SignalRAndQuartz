@@ -23,7 +23,7 @@ namespace Application.Schedule.Commands.CreateSchedule
             {
                 Name = request.Name,
                 IsActive = request.IsActive,
-                LastExecutedDate = request.LastExecutedDate.AddHours(7),
+                NextExecutedDate = request.NextExecutedDate.AddHours(7),
                 SecondsToExecute = request.SecondsToExecute,
                 RoomNames = request.RoomNames,
                 Type = request.Type,

@@ -68,7 +68,7 @@ internal class Program
             .UseMongoDB(builder.Configuration.GetConnectionString("MongoDb")!, "chat")
         );
 
-        
+
         builder.Services.AddQuartz(q =>
         {
             var jobKey = new JobKey("notifyScheduleJob", "scheduleGroup");
