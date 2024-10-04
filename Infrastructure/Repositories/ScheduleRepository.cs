@@ -39,7 +39,7 @@ namespace Infrastructure.Repositories
         public async Task<IList<Schedule>> GetSchedulesToExecute()
             => await _context.Schedules
                     .Where(x => x.IsActive && 
-                        x.LastExecutedDate.AddSeconds(x.SecondsToExecute.HasValue ? (double)x.SecondsToExecute : 0) <= DateTime.Now)
+                        x.LastExecutedDate.AddSeconds((double)x.SecondsToExecute) >= DateTime.Now)
                     .AsNoTracking()
                     .ToListAsync();
 

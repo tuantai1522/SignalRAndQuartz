@@ -8,7 +8,7 @@ namespace Domain.Entity
         public ObjectId Id { get; set; }
         public string? Name { get; set; }
         public DateTime LastExecutedDate { get; set; }
-        public long? SecondsToExecute { get; set; }
+        public long SecondsToExecute { get; set; }
         public string? Type { get; set; }
         public IList<string> RoomNames { get; set; } = [];
         public bool IsActive { get; set; }

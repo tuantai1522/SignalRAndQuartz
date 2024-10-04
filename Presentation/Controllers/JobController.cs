@@ -75,7 +75,7 @@ namespace Presentation.Controllers
             await _mediator.Send(new CreateScheduleCommand()
             {
                 IsActive = true,
-                LastExecutedDate = LastExecutedDate.AddHours(7),
+                LastExecutedDate = LastExecutedDate,
                 SecondsToExecute = totalSeconds,
                 Name = Name,
                 Type = selectedType,

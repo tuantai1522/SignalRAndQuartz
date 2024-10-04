@@ -25,7 +25,7 @@ namespace Application.Jobs
 
         public async Task Execute(IJobExecutionContext context)
         {
-            var schedules = await _mediator.Send(new GetSchedulesQuery());            
+           var schedules = await _mediator.Send(new GetSchedulesToExecuteQuery());            
 
             foreach (var schedule in schedules)
             {
@@ -58,10 +58,7 @@ namespace Application.Jobs
 
                 }
 
-
-
-
-                if (schedule.SecondsToExecute.HasValue)
+                if (schedule.SecondsToExecute != 0)
                 {
                     // execute multiple times
                     schedule.LastExecutedDate = DateTime.Now.AddSeconds((double)schedule.SecondsToExecute);
