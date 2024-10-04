@@ -9,6 +9,7 @@ namespace Domain.Interface
         Task<Schedule> CreateSchedule(Schedule schedule);
         Task DeleteScheduleById(string? id);
         Task<Schedule> UpdateScheduleById(string? id, Schedule schedule);
+        Task UpdateActiveByScheduleId(string? id, bool status = false);
 
     }
 }

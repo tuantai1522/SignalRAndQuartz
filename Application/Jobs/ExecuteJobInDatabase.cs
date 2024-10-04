@@ -1,6 +1,5 @@
 ﻿using Application.Room.Queries.GetListRoom;
 using Application.Schedule.Commands.UpdateScheduleById;
-using Application.Schedule.Queries.GetSchedules;
 using Application.Schedule.Queries.GetSchedulesToExecute;
 using Infrastructure;
 using MediatR;

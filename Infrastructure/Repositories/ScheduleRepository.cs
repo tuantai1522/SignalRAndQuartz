@@ -43,6 +43,20 @@ namespace Infrastructure.Repositories
                     .AsNoTracking()
                     .ToListAsync();
 
+        public async Task UpdateActiveByScheduleId(string? id, bool status = false)
+        {
+            var scheduleInDatabase = await _context.Schedules
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id.ToString() == id) ?? throw new KeyNotFoundException();
+
+            scheduleInDatabase.IsActive = status;
+            scheduleInDatabase.LastExecutedDate = DateTime.Now.AddHours(7);
+
+            _context.Schedules.Update(scheduleInDatabase);
+
+            await _context.SaveChangesAsync();
+        }
+
         public async Task<Schedule> UpdateScheduleById(string? id, Schedule schedule)
         {
             var scheduleInDatabase = await _context.Schedules

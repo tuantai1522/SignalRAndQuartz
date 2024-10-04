@@ -51,8 +51,11 @@
                         @(item.RoomNames.Count == 0 ? "All" : string.Join(", ", item.RoomNames))
                     </td>
                     <td>
+                        <button class="btn btn-@(item.IsActive ? "warning" : "primary")">
+                            <a class="text-decoration-none text-light" asp-action="@(item.IsActive ? "KillJob" : "OpenJob")" asp-route-id="@item.Id.ToString()">@(item.IsActive ? "Stop" : "Open")</a>
+                        </button>
                         <button class="btn btn-danger">
-                            <a class="text-decoration-none text-light" asp-action="Delete" asp-route-id="@item.Id.ToString()">Delete</a>
+                            <a class="text-decoration-none text-light" asp-action="DeleteJob" asp-route-id="@item.Id.ToString()">Delete</a>
                         </button>
                     </td>
                 </tr>

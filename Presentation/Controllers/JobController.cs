@@ -1,11 +1,15 @@
 ﻿using Application.ActionType.Queries.GetActionTypes;
 using Application.Schedule.Commands.CreateSchedule;
+using Application.Schedule.Commands.DeleteScheduleById;
+using Application.Schedule.Commands.UpdateActiveByScheduleId;
+using Application.Schedule.Commands.UpdateScheduleById;
 using Application.Schedule.Queries.GetSchedules;
 using Application.Sender.Queries.GetSenderByUserName;
 using Domain.Entity;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Quartz;
 
 namespace Presentation.Controllers
 {
@@ -84,5 +88,31 @@ namespace Presentation.Controllers
             return RedirectToAction("Index", "Job");
         }
 
+        public async Task<IActionResult> DeleteJob(string Id)
+        {
+            await _mediator.Send(new DeleteScheduleByIdCommand()
+            {
+                Id = Id,
+            });
+            return RedirectToAction("Index", "Job");
+        }
+
+        public async Task<IActionResult> KillJob(string Id)
+        {
+            await _mediator.Send(new UpdateActiveByScheduleIdCommand()
+            {
+                Id = Id,
+            });
+            return RedirectToAction("Index", "Job");
+        }
+        public async Task<IActionResult> OpenJob(string Id)
+        {
+            await _mediator.Send(new UpdateActiveByScheduleIdCommand()
+            {
+                Id = Id,
+                Status = true,
+            });
+            return RedirectToAction("Index", "Job");
+        }
     }
 }

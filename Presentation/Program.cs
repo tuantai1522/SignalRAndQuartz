@@ -21,6 +21,7 @@ using Application.Schedule.Commands.DeleteScheduleById;
 using Application.Schedule.Commands.UpdateScheduleById;
 using Application.ActionType.Queries.GetActionTypes;
 using Application.Schedule.Queries.GetSchedulesToExecute;
+using Application.Schedule.Commands.UpdateActiveByScheduleId;
 
 internal class Program
 {
@@ -57,6 +58,7 @@ internal class Program
         builder.Services.AddMediatR(c => c.RegisterServicesFromAssemblyContaining<CreateScheduleCommand>());
         builder.Services.AddMediatR(c => c.RegisterServicesFromAssemblyContaining<DeleteScheduleByIdCommand>());
         builder.Services.AddMediatR(c => c.RegisterServicesFromAssemblyContaining<UpdateScheduleByIdCommand>());
+        builder.Services.AddMediatR(c => c.RegisterServicesFromAssemblyContaining<UpdateActiveByScheduleIdCommand>());
 
         builder.Services.AddMediatR(c => c.RegisterServicesFromAssemblyContaining<GetActionTypesQuery>());
 
