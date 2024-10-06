@@ -27,31 +27,31 @@
 
                 <div id="repeatInputs" style="display: none;">
                     <h3>Enter Time Details:</h3>
-                    <label>Year:</label>
-                    <input type="number" name="year" min="0" /><br />
-                    <label>Month:</label>
-                    <input type="number" name="month" min="0" /><br />
-                    <label>Day:</label>
-                    <input type="number" name="day" min="0" /><br />
-                    <label>Hour:</label>
-                    <input type="number" name="hour" min="0" /><br />
-                    <label>Minute:</label>
-                    <input type="number" name="minute" min="0"  /><br />
-                    <label>Second:</label>
-                    <input type="number" name="second" min="0" /><br />
+                    <label class="control-label">Year:</label>
+                    <input class="form-control" type="number" name="year" min="0" /><br />
+                    <label class="control-label">Month:</label>
+                    <input class="form-control" type="number" name="month" min="0" /><br />
+                    <label class="control-label">Day:</label>
+                    <input class="form-control" type="number" name="day" min="0" /><br />
+                    <label class="control-label">Hour:</label>
+                    <input class="form-control" type="number" name="hour" min="0" /><br />
+                    <label class="control-label">Minute:</label>
+                    <input class="form-control" type="number" name="minute" min="0" /><br />
+                    <label class="control-label">Second:</label>
+                    <input class="form-control" type="number" name="second" min="0" /><br />
                 </div>
 
                 <div>
-                    <label>Send To:</label><br />
+                    <label class="control-label">Send To:</label><br />
                     <input type="radio" id="sendToRoom" name="sendToOption" value="RoomName" onclick="toggleRoomInput(true)" />
-                    <label for="sendToRoom">Send To RoomName</label><br />
+                    <label class="control-label" for="sendToRoom">Send To RoomName</label><br />
                     <input type="radio" id="sendToAll" name="sendToOption" value="All" onclick="toggleRoomInput(false)" checked />
                     <label for="sendToAll">All</label>
                 </div>
 
                 <div id="roomInput" style="display: none;">
-                    <label>Room Name:</label>
-                    <input type="text" name="roomName" />
+                    <label class ="control-label">Room Name:</label>
+                    <input class="form-control" type="text" name="roomName" />
                 </div>
 
                 <div class="form-group">

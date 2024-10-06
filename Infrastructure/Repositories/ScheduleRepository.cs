@@ -61,7 +61,14 @@ namespace Infrastructure.Repositories
                 .FirstOrDefaultAsync(x => x.Id.ToString() == id) ?? throw new KeyNotFoundException();
 
             scheduleInDatabase.IsActive = status;
-            scheduleInDatabase.NextExecutedDate = DateTime.Now.AddHours(7);
+
+            // Keep hour, minute, and second same but date is changed to today
+            var nextExecutedDate = scheduleInDatabase.NextExecutedDate;
+            var currentDate = DateTime.Now.Date;
+            var newNextExecutedDate = currentDate.AddHours(nextExecutedDate.Hour + 7)
+                                                 .AddMinutes(nextExecutedDate.Minute)
+                                                 .AddSeconds(nextExecutedDate.Second);
+            scheduleInDatabase.NextExecutedDate = newNextExecutedDate;
 
             _context.Schedules.Update(scheduleInDatabase);
 

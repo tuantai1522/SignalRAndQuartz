@@ -52,7 +52,6 @@ namespace Presentation.Controllers
                 int Hour,
                 int Minute,
                 int Second,
-                string sendToOption,
                 string roomName,
                 string selectedType)
         {
